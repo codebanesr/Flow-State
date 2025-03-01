@@ -6,12 +6,12 @@ services:
     command: "agent -dev -client=0.0.0.0"
     networks:
       - fabio_network
-    
+
   fabio:
     image: fabiolb/fabio
     ports:
-      - "9999:9999" # Fabio HTTP port
-      - "9998:9998" # Fabio UI port
+      - "9999:9999"  # Fabio HTTP port
+      - "9998:9998"  # Fabio UI port
     environment:
       - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
     depends_on:
@@ -35,8 +35,30 @@ services:
     networks:
       - fabio_network
 
+  swag:
+    image: linuxserver/swag
+    container_name: swag
+    restart: unless-stopped
+    profiles: ["production"]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - PUID=1000             # Set to your user id
+      - PGID=1000             # Set to your group id
+      - TZ=Europe/London      # Adjust timezone as needed
+      - URL=agent.tryiris.dev # Your primary domain name
+      - SUBDOMAINS=www        # Subdomains you wish to proxy (comma separated)
+      - VALIDATION=http       # Use HTTP validation (or dns if you prefer)
+    volumes:
+      - letsencrypt_data:/config
+      - ./swag/nginx/site-confs:/config/nginx/site-confs
+    networks:
+      - fabio_network
+
 networks:
   fabio_network:
     external: true
 
-
+volumes:
+  letsencrypt_data:
