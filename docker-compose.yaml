@@ -67,8 +67,7 @@ services:
       - DISABLE_IPV6=true
       - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
-      - letsencrypt_data:/config
-      - ./swag/nginx/site-confs:/config/nginx/site-confs
+      - ./swag:/config
     networks:
       - fabio_network
     # Add these lines
