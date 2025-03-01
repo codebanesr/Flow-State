@@ -48,7 +48,7 @@ services:
     volumes:
       - letsencrypt_data:/etc/letsencrypt
     entrypoint: >
-      sh -c "certbot certonly --standalone --non-interactive --agree-tos --email your-email@example.com -d yourdomain.com"
+      sh -c "certbot certonly --standalone --non-interactive --agree-tos --email shanur.cse.nitap@gmail.com -d agent.tryiris.dev"
     networks:
       - fabio_network
 
