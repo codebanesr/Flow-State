@@ -15,13 +15,13 @@ build: swagger
 run: swagger
 	go run main.go
 
-# Bring up the Docker stack in development mode (no Certbot).
+# Bring up the Docker stack in development mode (no SWAG).
 up:
 	docker compose up -d
 
-# Bring up the Docker stack in production mode (includes Certbot and production Fabio configuration).
+# Bring up the Docker stack in production mode (includes SWAG for SSL).
 prod:
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+	docker compose --profile production up -d
 
 # Tear down the Docker stack.
 down:
@@ -39,6 +39,6 @@ help:
 	@echo "  make build   - Build the orchestrator binary"
 	@echo "  make run     - Run the orchestrator (with swagger docs)"
 	@echo "  make up      - Bring up the Docker stack (development mode)"
-	@echo "  make prod    - Bring up the Docker stack in production mode (includes Certbot and prod Fabio config)"
+	@echo "  make prod    - Bring up the Docker stack in production mode (includes SWAG for SSL)"
 	@echo "  make down    - Tear down the Docker stack"
 	@echo "  make clean   - Remove build artifacts and docs"
