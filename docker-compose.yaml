@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   consul:
     image: hashicorp/consul
@@ -16,9 +14,6 @@ services:
       - "9998:9998"  # Fabio UI port
     environment:
       - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
-    volumes:
-      - letsencrypt_data:/etc/letsencrypt
-      - ./fabio/fabio.properties:/etc/fabio/fabio.properties:ro
     depends_on:
       - consul
     networks:
@@ -37,18 +32,6 @@ services:
     depends_on:
       - consul
       - fabio
-    networks:
-      - fabio_network
-
-  certbot:
-    image: certbot/certbot:latest
-    container_name: certbot
-    profiles:
-      - production
-    volumes:
-      - letsencrypt_data:/etc/letsencrypt
-    entrypoint: >
-      sh -c "certbot certonly --standalone --non-interactive --agree-tos --email shanur.cse.nitap@gmail.com -d agent.tryiris.dev"
     networks:
       - fabio_network
 
