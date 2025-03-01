@@ -150,12 +150,12 @@ func (dm *DockerManager) registerWithConsul(containerID string, containerIP stri
         Name:    fmt.Sprintf("chat-api-%s", shortID),
         ID:      fmt.Sprintf("chat-api-%s", shortID),
         Address: containerIP,
-        Port:    8080,
+        Port:    3000,  // Changed from 8080 to 3000
         Tags:    []string{
             fmt.Sprintf("urlprefix-/%s/chat/ strip=/%s/chat/", shortID, shortID),
         },
     }
-    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:8080/health", containerIP)
+    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:3000/health", containerIP)  // Also update the health check URL
     chatRegistration.Check.Interval = "10s"
 
     // Register noVNC endpoint
@@ -262,7 +262,33 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
     // Add optional VNC configurations only if they are set
     if vncConfig.Resolution != "" {
         env = append(env, fmt.Sprintf("VNC_RESOLUTION=%s", vncConfig.Resolution))
+    } else {
+        // Use the width and height from config
+        env = append(env, fmt.Sprintf("VNC_RESOLUTION=%sx%s", 
+            dm.cfg.ContainerEnvVars.Width, 
+            dm.cfg.ContainerEnvVars.Height))
     }
+    
+    // Add the rest of the environment variables
+    env = append(env, []string{
+        fmt.Sprintf("PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=%s", dm.cfg.ContainerEnvVars.PlaywrightChromiumPath),
+        fmt.Sprintf("LOG_LEVEL=%s", dm.cfg.ContainerEnvVars.LogLevel),
+        fmt.Sprintf("RABBITMQ_QUEUE=%s", dm.cfg.ContainerEnvVars.RabbitMQQueue),
+        fmt.Sprintf("PORT=%s", dm.cfg.ContainerEnvVars.Port),
+        fmt.Sprintf("RABBITMQ_USER=%s", dm.cfg.ContainerEnvVars.RabbitMQUser),
+        fmt.Sprintf("RABBITMQ_PASSWORD=%s", dm.cfg.ContainerEnvVars.RabbitMQPassword),
+        fmt.Sprintf("RABBITMQ_HOST=%s", dm.cfg.ContainerEnvVars.RabbitMQHost),
+        fmt.Sprintf("RABBITMQ_PORT=%s", dm.cfg.ContainerEnvVars.RabbitMQPort),
+    }...)
+    
+    // Add API keys only if they are set
+    if dm.cfg.ContainerEnvVars.OpenAIAPIKey != "" {
+        env = append(env, fmt.Sprintf("OPENAI_API_KEY=%s", dm.cfg.ContainerEnvVars.OpenAIAPIKey))
+    }
+    if dm.cfg.ContainerEnvVars.AnthropicAPIKey != "" {
+        env = append(env, fmt.Sprintf("ANTHROPIC_API_KEY=%s", dm.cfg.ContainerEnvVars.AnthropicAPIKey))
+    }
+    
     if vncConfig.ColDepth != 0 {
         env = append(env, fmt.Sprintf("VNC_COL_DEPTH=%d", vncConfig.ColDepth))
     }
@@ -275,7 +301,7 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
 
     hostConfig := &container.HostConfig{
         PortBindings: nat.PortMap{
-            "8080/tcp": []nat.PortBinding{{HostPort: ""}}, // Chat API port
+            "3000/tcp": []nat.PortBinding{{HostPort: ""}}, // Chat API port (changed from 8080 to 3000)
             "6901/tcp": []nat.PortBinding{{HostPort: ""}}, // noVNC port
             "5901/tcp": []nat.PortBinding{{HostPort: ""}}, // VNC port
         },
@@ -287,7 +313,7 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
         &container.Config{
             Image: imageName,
             ExposedPorts: nat.PortSet{
-                "8080/tcp": struct{}{},
+                "3000/tcp": struct{}{}, // Changed from 8080 to 3000
                 "6901/tcp": struct{}{},
                 "5901/tcp": struct{}{},
             },
@@ -356,127 +382,11 @@ type ImageInfo struct {
 var availableImages = []ImageInfo{
     // Generic Ubuntu images
     {
-        ID:          "ubuntu-base",
-        Name:        "accetto/ubuntu-vnc-xfce-g3",
-        Description: "Base Ubuntu with VNC and Xfce",
-        Category:    "Generic Ubuntu",
-        Tags:        []string{"ubuntu", "base", "xfce"},
-    },
-    {
-        ID:          "ubuntu-chromium",
-        Name:        "accetto/ubuntu-vnc-xfce-chromium-g3",
-        Description: "Ubuntu with Chromium browser",
-        Category:    "Generic Ubuntu",
-        Tags:        []string{"ubuntu", "chromium", "browser"},
-    },
-    {
-        ID:          "ubuntu-firefox",
-        Name:        "accetto/ubuntu-vnc-xfce-firefox-g3",
-        Description: "Ubuntu with Firefox browser",
-        Category:    "Generic Ubuntu",
-        Tags:        []string{"ubuntu", "firefox", "browser"},
-    },
-    // Ubuntu with OpenGL support
-    {
-        ID:          "ubuntu-opengl",
-        Name:        "accetto/ubuntu-vnc-xfce-opengl-g3",
-        Description: "Ubuntu with Mesa3D and VirtualGL support",
-        Category:    "Generic Ubuntu",
-        Tags:        []string{"ubuntu", "opengl", "graphics", "3d"},
-    },
-    // Generic Debian images
-    {
-        ID:          "debian-base",
-        Name:        "accetto/debian-vnc-xfce-g3",
+        ID:          "debian-chromium",
+        Name:        "shanurcsenitap/chrome-desktop-playwright",
         Description: "Base Debian with VNC and Xfce",
         Category:    "Generic Debian",
-        Tags:        []string{"debian", "base", "xfce"},
-    },
-    {
-        ID:          "debian-chromium",
-        Name:        "accetto/debian-vnc-xfce-chromium-g3",
-        Description: "Debian with Chromium browser",
-        Category:    "Generic Debian",
-        Tags:        []string{"debian", "chromium", "browser"},
-    },
-    {
-        ID:          "debian-firefox",
-        Name:        "accetto/debian-vnc-xfce-firefox-g3",
-        Description: "Debian with Firefox browser",
-        Category:    "Generic Debian",
-        Tags:        []string{"debian", "firefox", "browser"},
-    },
-    // Drawing and Graphics
-    {
-        ID:          "ubuntu-blender",
-        Name:        "accetto/ubuntu-vnc-xfce-blender-g3",
-        Description: "Ubuntu with Blender for 3D modeling",
-        Category:    "Graphics and Modeling",
-        Tags:        []string{"ubuntu", "blender", "3d", "modeling"},
-    },
-    {
-        ID:          "ubuntu-drawio",
-        Name:        "accetto/ubuntu-vnc-xfce-drawio-g3",
-        Description: "Ubuntu with Draw.io for diagrams",
-        Category:    "Graphics and Modeling",
-        Tags:        []string{"ubuntu", "drawio", "diagrams"},
-    },
-    {
-        ID:          "ubuntu-freecad",
-        Name:        "accetto/ubuntu-vnc-xfce-freecad-g3",
-        Description: "Ubuntu with FreeCAD for CAD modeling",
-        Category:    "Graphics and Modeling",
-        Tags:        []string{"ubuntu", "freecad", "cad", "modeling"},
-    },
-    {
-        ID:          "ubuntu-gimp",
-        Name:        "accetto/ubuntu-vnc-xfce-gimp-g3",
-        Description: "Ubuntu with GIMP for image editing",
-        Category:    "Graphics and Modeling",
-        Tags:        []string{"ubuntu", "gimp", "image-editing"},
-    },
-    {
-        ID:          "ubuntu-inkscape",
-        Name:        "accetto/ubuntu-vnc-xfce-inkscape-g3",
-        Description: "Ubuntu with Inkscape for vector graphics",
-        Category:    "Graphics and Modeling",
-        Tags:        []string{"ubuntu", "inkscape", "vector-graphics"},
-    },
-    // Development Tools
-    {
-        ID:          "debian-nodejs",
-        Name:        "accetto/debian-vnc-xfce-nodejs-g3",
-        Description: "Debian with Node.js development environment",
-        Category:    "Development",
-        Tags:        []string{"debian", "nodejs", "development", "javascript"},
-    },
-    {
-        ID:          "debian-nvm",
-        Name:        "accetto/debian-vnc-xfce-nvm-g3",
-        Description: "Debian with NVM for Node.js version management",
-        Category:    "Development",
-        Tags:        []string{"debian", "nvm", "nodejs", "development"},
-    },
-    {
-        ID:          "debian-postman",
-        Name:        "accetto/debian-vnc-xfce-postman-g3",
-        Description: "Debian with Postman for API testing",
-        Category:    "Development",
-        Tags:        []string{"debian", "postman", "api-testing"},
-    },
-    {
-        ID:          "debian-python",
-        Name:        "accetto/debian-vnc-xfce-python-g3",
-        Description: "Debian with Python development environment",
-        Category:    "Development",
-        Tags:        []string{"debian", "python", "development"},
-    },
-    {
-        ID:          "debian-vscode",
-        Name:        "accetto/debian-vnc-xfce-vscode-g3",
-        Description: "Debian with Visual Studio Code",
-        Category:    "Development",
-        Tags:        []string{"debian", "vscode", "ide", "development"},
+        Tags:        []string{"debian", "base", "xfce", "xvfb"},
     },
 }
 

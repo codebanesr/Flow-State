@@ -131,28 +131,43 @@ make run     # Run the application (includes swagger generation)
 Our platform is highly configurable. The options below let you fine-tune the behavior of both the Control Hub and the individual desktop containers—ensuring optimal performance for everything from automated testing to AI agent desktop simulations. For a deeper dive into how these configurations integrate with our modular architecture, refer back to the [Architecture](#-architecture) section.
 
 ### 🔧 Environment Variables
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `WIDTH` | Width of the virtual desktop/browser window | `1024` |
+| `HEIGHT` | Height of the virtual desktop/browser window | `768` |
+| `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` | Path to the Chromium executable for Playwright | `/usr/bin/chromium` |
+| `LOG_LEVEL` | Logging verbosity level (debug, info, warn, error) | `debug` |
+| `RABBITMQ_QUEUE` | Name of the RabbitMQ queue for browser tasks | `browser_tasks` |
+| `OPENAI_API_KEY` | Your OpenAI API key for AI integrations | - |
+| `ANTHROPIC_API_KEY` | Your Anthropic API key for Claude AI integrations | - |
+| `PORT` | Port on which the service will run | `3000` |
+| `RABBITMQ_USER` | Username for RabbitMQ authentication | `admin` |
+| `RABBITMQ_PASSWORD` | Password for RabbitMQ authentication | `admin` |
+| `RABBITMQ_HOST` | Hostname or IP address of the RabbitMQ server | `rabbitmq` |
+| `RABBITMQ_PORT` | Port number for RabbitMQ connection | `5672` |
+| `BEHIND_PROXY` | Whether the service is running behind a proxy | `false` |
+| `CONSUL_HTTP_ADDR` | Address of the Consul service | `localhost:8500` |
 
-| Variable           | Description                                                                |
-| :---------------: | -------------------------------------------------------------------------- |
-| IMAGE_ID          | ID of the container image to use (e.g., `ubuntu-base`, `debian-chromium`)  |
-| VNC_PASSWORD      | Password for VNC connection access                                          |
-| VNC_RESOLUTION    | Screen resolution for the virtual display (e.g., `1920x1080`)              |
-| VNC_COL_DEPTH     | Color depth for the VNC connection (e.g., 24, 32)                          |
-| VNC_DISPLAY       | X11 display number (e.g., `:1`)                                            |
-| VNC_VIEW_ONLY     | Set to `true` to disable input to the VNC session                          |
-| CUSTOM_PORT        | Override the default HTTP port (3000) for the container.                                                                                                    |
-| CUSTOM_HTTPS_PORT  | Override the default HTTPS port (3001) for the container.                                                                                                     |
-| CUSTOM_USER        | HTTP Basic auth username (default: `abc`).                                                                                                                    |
-| PASSWORD           | HTTP Basic auth password (default: `abc`). If unset, authentication is disabled.                                                                                              |
-| SUBFOLDER          | Subfolder path if running behind a reverse proxy (format: `/subfolder/`).                                                                                                      |
-| TITLE              | Browser window title (default: **Virtual Browser Client**).                                                                                                                   |
-| FM_HOME            | Home directory for the file manager (default: `/config`).                                                                                                     |
-| START_DOCKER       | Set to `false` to disable auto-start of the Docker-in-Docker (DinD) setup.                                                                                                    |
-| DRINODE            | Specify the GPU device for [DRI3 GPU Acceleration](https://www.kasmweb.com/kasmvnc/docs/master/gpu_acceleration.html) (e.g., `/dev/dri/renderD128`).                     |
-| DISABLE_IPV6       | Disable IPv6 if set to any value.                                                                                                                             |
-| LC_ALL             | Locale setting (e.g., `fr_FR.UTF-8` or `ar_AE.UTF-8`).                                                                                                         |
-| NO_DECOR           | Run without window borders (ideal for PWA setups).                                                                                                            |
-| NO_FULL            | Prevents applications from auto-fullscreen when using the window manager.                                                                                                     |
+### 🔌 Exposed Ports & Endpoints
+
+| Service | Port | Access URL | Description |
+|---------|------|------------|-------------|
+| Orchestrator API | 8090 | `http://localhost:8090/` | Main control API for container management |
+| Fabio Load Balancer | 9999 | `http://localhost:9999/` | HTTP traffic to containers |
+| Fabio UI | 9998 | `http://localhost:9998/` | Fabio management interface |
+| Consul | 8500 | `http://localhost:8500/` | Service discovery dashboard |
+| Container Chat API | 3000 | `/{containerID}/chat/` | Container's chat API endpoint |
+| Container noVNC | 6901 | `/{containerID}/novnc/` | Web-based VNC client |
+| Container VNC | 5901 | `/{containerID}/vnc/` | Direct VNC server access |
+
+### 📚 API Documentation
+The API documentation is available via Swagger UI:
+- When running behind proxy: `http://localhost:9999/orchestrator/swagger/`
+- Direct access: `http://localhost:8090/swagger/`
+
+The Swagger JSON definition is located at:
+- Behind proxy: `http://localhost:9999/orchestrator/swagger/doc.json`
+- Direct access: `http://localhost:8090/swagger/doc.json`
 
 ### ⚙️ Run Configurations
 
