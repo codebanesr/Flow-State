@@ -30,20 +30,21 @@ import (
 // @BasePath  /
 // @schemes   http
 func main() {
-	log.Println("Starting the orchestrator service...")
-
-	cfg := config.Load()
-	log.Println("Configuration loaded successfully")
-	
-	// Update Swagger host and base path based on proxy configuration
-	if cfg.BehindProxy {
-		docs.SwaggerInfo.Host = "localhost:9999"
-		docs.SwaggerInfo.BasePath = "/orchestrator"
-	} else {
-		docs.SwaggerInfo.Host = "localhost:8090"
-		docs.SwaggerInfo.BasePath = "/"
-	}
-	
+    log.Println("Starting the orchestrator service...")
+    
+    cfg := config.Load()
+    log.Println("Configuration loaded successfully")
+    
+    // Update Swagger host and base path based on proxy configuration
+    if cfg.BehindProxy {
+        // Let Swagger use the request's host dynamically
+        docs.SwaggerInfo.Host = ""  // Empty host will use the request's host
+        docs.SwaggerInfo.BasePath = "/orchestrator"
+    } else {
+        docs.SwaggerInfo.Host = "localhost:8090"
+        docs.SwaggerInfo.BasePath = "/"
+    }
+    
 	dockerClient := docker.NewDockerManager(cfg)
 	log.Println("Docker manager initialized")
 	
@@ -67,11 +68,12 @@ func main() {
 	if cfg.BehindProxy {  // Add this configuration in your config package
 		swaggerURL = "swagger/doc.json"
 	}
-	r.Handle("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(swaggerURL),
-		httpSwagger.DeepLinking(true),
-		httpSwagger.DocExpansion("none"),
-	))
+    // Update the Swagger handler configuration
+    r.Handle("/swagger/*", httpSwagger.Handler(
+        httpSwagger.URL(swaggerURL),
+        httpSwagger.DeepLinking(true),
+        httpSwagger.DocExpansion("none"),
+    ))
 
 	// Register API routes
 	// Modify the routes section
