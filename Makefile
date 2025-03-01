@@ -9,11 +9,11 @@ swagger:
 
 # Build the orchestrator binary (after generating swagger docs).
 build: swagger
-	go build -o bin/orchestrator
+	$(GOPATH) build -o bin/orchestrator
 
 # Run the orchestrator directly (after regenerating swagger docs).
 run: swagger
-	go run main.go
+	$(GOPATH) run main.go
 
 # Bring up the Docker stack in development mode (no SWAG).
 up:
