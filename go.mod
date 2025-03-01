@@ -11,10 +11,7 @@ require (
 	github.com/swaggo/swag v1.16.4 // Make sure this version is present
 )
 
-require (
-	github.com/go-chi/chi/v5 v5.2.1
-	github.com/joho/godotenv v1.5.1
-)
+require github.com/go-chi/chi/v5 v5.2.1
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

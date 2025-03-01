@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/joho/godotenv"
 	"github.com/shanurrahman/orchestrator/config"
 	"github.com/shanurrahman/orchestrator/docker"
 	"github.com/shanurrahman/orchestrator/docs"
@@ -32,15 +31,7 @@ import (
 // @schemes   http
 func main() {
 	log.Println("Starting the orchestrator service...")
-	
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found, using environment variables")
-	} else {
-		log.Println("Environment variables loaded from .env file")
-	}
-	
+
 	cfg := config.Load()
 	log.Println("Configuration loaded successfully")
 	

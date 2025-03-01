@@ -12,7 +12,7 @@ swagger:
 
 # Build the orchestrator binary (after generating swagger docs).
 build: swagger
-	$(GOPATH) build -o bin/orchestrator
+	$(GOPATH) build -o orchestrator
 
 # Run the orchestrator directly (after regenerating swagger docs).
 run: swagger
