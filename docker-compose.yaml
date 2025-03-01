@@ -47,9 +47,10 @@ services:
       - PUID=1000             # Set to your user id
       - PGID=1000             # Set to your group id
       - TZ=Europe/London      # Adjust timezone as needed
-      - URL=agent.tryiris.dev # Your primary domain name
+      - URL=bua.tryiris.dev   # Your primary domain name
       - SUBDOMAINS=www        # Subdomains you wish to proxy (comma separated)
       - VALIDATION=http       # Use HTTP validation (or dns if you prefer)
+      - DISABLE_IPV6=true    # Disable IPv6 support
     volumes:
       - letsencrypt_data:/config
       - ./swag/nginx/site-confs:/config/nginx/site-confs
