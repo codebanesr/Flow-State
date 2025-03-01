@@ -1,4 +1,4 @@
-.PHONY: all swagger build run clean up prod down help
+.PHONY: all swagger build run clean up prod down help td
 
 # Determine which docker compose command to use
 DOCKER_COMPOSE := $(shell which docker-compose 2>/dev/null || echo "docker compose")
@@ -30,9 +30,16 @@ prod:
 down:
 	$(DOCKER_COMPOSE) down
 
+# Complete Docker teardown (removes all containers, images, volumes, and networks).
+td:
+	docker system prune -af --volumes
+
 # Clean build artifacts and swagger docs.
 clean:
 	rm -rf bin/ docs/
+
+logs:
+	docker-compose logs -f
 
 # Display help information.
 help:
@@ -44,4 +51,5 @@ help:
 	@echo "  make up      - Bring up the Docker stack (development mode)"
 	@echo "  make prod    - Bring up the Docker stack in production mode (includes SWAG for SSL)"
 	@echo "  make down    - Tear down the Docker stack"
+	@echo "  make td      - Complete Docker teardown (removes all containers, images, volumes, and networks)"
 	@echo "  make clean   - Remove build artifacts and docs"

@@ -61,7 +61,7 @@ services:
       - PUID=1000             # Set to your user id
       - PGID=1000             # Set to your group id
       - TZ=Europe/London      # Adjust timezone as needed
-      - URL=bua.tryiris.dev   # Your primary domain name
+      - URL=operator.tryiris.dev   # Your primary domain name
       - VALIDATION=http       # Use HTTP validation (or dns if you prefer)
       - SUBDOMAINS=www,rabbitmq # Subdomains to be covered by the cert
       - DISABLE_IPV6=true    # Disable IPv6 support
@@ -77,3 +77,4 @@ networks:
 
 volumes:
   letsencrypt_data:
+  rabbitmq-data:
