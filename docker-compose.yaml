@@ -58,18 +58,22 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - PUID=1000             # Set to your user id
-      - PGID=1000             # Set to your group id
-      - TZ=Europe/London      # Adjust timezone as needed
-      - URL=operator.tryiris.dev   # Your primary domain name
-      - VALIDATION=http       # Use HTTP validation (or dns if you prefer)
-      - SUBDOMAINS=www,rabbitmq # Subdomains to be covered by the cert
-      - DISABLE_IPV6=true    # Disable IPv6 support
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - URL=operator.tryiris.dev
+      - VALIDATION=http
+      - SUBDOMAINS=www,rabbitmq
+      - DISABLE_IPV6=true
+      - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
       - letsencrypt_data:/config
       - ./swag/nginx/site-confs:/config/nginx/site-confs
     networks:
       - fabio_network
+    # Add these lines
+    cap_add:
+      - NET_ADMIN
 
 networks:
   fabio_network:
