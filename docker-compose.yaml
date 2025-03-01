@@ -10,9 +10,11 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
