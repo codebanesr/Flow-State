@@ -58,7 +58,7 @@ services:
 
 networks:
   fabio_network:
-    external: true
+    driver: bridge
 
 volumes:
   letsencrypt_data:
