@@ -150,12 +150,12 @@ func (dm *DockerManager) registerWithConsul(containerID string, containerIP stri
         Name:    fmt.Sprintf("chat-api-%s", shortID),
         ID:      fmt.Sprintf("chat-api-%s", shortID),
         Address: containerIP,
-        Port:    8080,
+        Port:    3000,  // Changed from 8080 to 3000
         Tags:    []string{
             fmt.Sprintf("urlprefix-/%s/chat/ strip=/%s/chat/", shortID, shortID),
         },
     }
-    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:8080/health", containerIP)
+    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:3000/health", containerIP)  // Also update the health check URL
     chatRegistration.Check.Interval = "10s"
 
     // Register noVNC endpoint
@@ -301,7 +301,7 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
 
     hostConfig := &container.HostConfig{
         PortBindings: nat.PortMap{
-            "8080/tcp": []nat.PortBinding{{HostPort: ""}}, // Chat API port
+            "3000/tcp": []nat.PortBinding{{HostPort: ""}}, // Chat API port (changed from 8080 to 3000)
             "6901/tcp": []nat.PortBinding{{HostPort: ""}}, // noVNC port
             "5901/tcp": []nat.PortBinding{{HostPort: ""}}, // VNC port
         },
@@ -313,7 +313,7 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
         &container.Config{
             Image: imageName,
             ExposedPorts: nat.PortSet{
-                "8080/tcp": struct{}{},
+                "3000/tcp": struct{}{}, // Changed from 8080 to 3000
                 "6901/tcp": struct{}{},
                 "5901/tcp": struct{}{},
             },
