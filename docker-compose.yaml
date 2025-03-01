@@ -7,6 +7,18 @@ services:
     networks:
       - fabio_network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - fabio_network
+    restart: unless-stopped
+
   fabio:
     image: fabiolb/fabio
     ports:
@@ -48,8 +60,8 @@ services:
       - PGID=1000             # Set to your group id
       - TZ=Europe/London      # Adjust timezone as needed
       - URL=bua.tryiris.dev   # Your primary domain name
-      - SUBDOMAINS=www        # Subdomains you wish to proxy (comma separated)
       - VALIDATION=http       # Use HTTP validation (or dns if you prefer)
+      - SUBDOMAINS=www,rabbitmq # Subdomains to be covered by the cert
       - DISABLE_IPV6=true    # Disable IPv6 support
     volumes:
       - letsencrypt_data:/config
