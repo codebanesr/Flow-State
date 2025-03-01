@@ -1,5 +1,8 @@
 .PHONY: all swagger build run clean up prod down help
 
+# Determine which docker compose command to use
+DOCKER_COMPOSE := $(shell which docker-compose 2>/dev/null || echo "docker compose")
+
 # Default target: generate swagger docs and build the orchestrator binary.
 all: swagger build
 
@@ -17,15 +20,15 @@ run: swagger
 
 # Bring up the Docker stack in development mode (no SWAG).
 up:
-	docker compose up -d
+	$(DOCKER_COMPOSE) up -d
 
 # Bring up the Docker stack in production mode (includes SWAG for SSL).
 prod:
-	docker compose --profile production up -d
+	$(DOCKER_COMPOSE) --profile production up -d
 
 # Tear down the Docker stack.
 down:
-	docker compose down
+	$(DOCKER_COMPOSE) down
 
 # Clean build artifacts and swagger docs.
 clean:
