@@ -63,7 +63,7 @@ services:
       - TZ=Europe/London
       - URL=operator.tryiris.dev
       - VALIDATION=http
-      - SUBDOMAINS=www,rabbitmq
+      - SUBDOMAINS=www,admin,rabbitmq
       - DISABLE_IPV6=true
       - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
