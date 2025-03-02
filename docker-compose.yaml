@@ -36,6 +36,7 @@ services:
   orchestrator:
     build: .
     container_name: orchestrator
+    user: root
     expose:
       - "8090"
     environment:
