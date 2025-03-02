@@ -44,6 +44,8 @@ services:
     environment:
       - CONSUL_HTTP_ADDR=consul:8500
       - BEHIND_PROXY=true
+    env_file:
+      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
