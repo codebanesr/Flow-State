@@ -64,9 +64,9 @@ func NewDockerManager(cfg *config.Config) *DockerManager {
     if err == nil {
         container, err := cli.ContainerInspect(ctx, hostname)
         if err == nil {
-            // Look for flow_state network
+            // Look for rustcorp network
             for network := range container.NetworkSettings.Networks {
-                if strings.Contains(network, "flow_state") {
+                if strings.Contains(network, "rustcorp") {
                     networkName = network
                     break
                 }

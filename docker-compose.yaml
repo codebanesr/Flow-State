@@ -5,7 +5,7 @@ services:
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
     networks:
-      - flow_state
+      - rustcorp
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -78,7 +78,7 @@ volumes:
   letsencrypt_data:
   rabbitmq-data:
 
-# Add networks section at the end
+# Update networks section at the end
 networks:
-  flow_state:
+  rustcorp:
     driver: bridge
