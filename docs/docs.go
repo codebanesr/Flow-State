@@ -249,7 +249,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8090",
 	BasePath:         "/",
-	Schemes:          []string{"http"},
+	Schemes:          []string{"http", "https"},
 	Title:            "Orchestrator API",
 	Description:      "A container orchestration service API",
 	InfoInstanceName: "swagger",
