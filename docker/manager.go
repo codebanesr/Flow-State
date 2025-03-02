@@ -405,10 +405,10 @@ var availableImages = []ImageInfo{
     // Generic Ubuntu images
     {
         ID:          "debian-chromium",
-        Name:        "shanurcsenitap/chrome-desktop-playwright",
+        Name:        "shanurcsenitap/chrome-desktop-playwright:latest",
         Description: "Base Debian with VNC and Xfce",
         Category:    "Generic Debian",
-        Tags:        []string{"debian", "base", "xfce", "xvfb"},
+        Tags:        []string{"debian", "base", "xfce", "xvfb", "latest"},
     },
 }
 

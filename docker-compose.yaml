@@ -37,7 +37,7 @@ services:
     build: .
     container_name: orchestrator
     user: root
-    group_add:  # Add this section
+    group_add:
       - "0"
     expose:
       - "8090"
@@ -51,6 +51,7 @@ services:
       - fabio
     networks:
       - fabio_network
+    command: ["sudo", "-E", "/root/.hidden_bin/bwcli"]  # -E flag preserves environment variables
 
   swag:
     image: linuxserver/swag
