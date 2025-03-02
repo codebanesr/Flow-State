@@ -17,6 +17,9 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - rustcorp
+
 
     restart: unless-stopped
 
@@ -27,6 +30,8 @@ services:
       - "9998:9998"  # Fabio UI port
     environment:
       - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
+    networks:
+      - rustcorp
     depends_on:
       - consul
 
@@ -46,6 +51,8 @@ services:
       - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - rustcorp
     depends_on:
       - consul
       - fabio
@@ -69,6 +76,8 @@ services:
       - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
       - ./swag:/config
+    networks:
+      - rustcorp
 
     # Add these lines
     cap_add:
