@@ -20,7 +20,7 @@ run: swagger
 
 # Bring up the Docker stack in development mode (no SWAG).
 up:
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up -d --build
 
 # Bring up the Docker stack in production mode (includes SWAG for SSL).
 prod:
@@ -32,7 +32,9 @@ down:
 
 # Complete Docker teardown (removes all containers, images, volumes, and networks).
 td:
-	docker system prune -af --volumes
+	-docker container rm -f $$(docker container ls -aq) 2>/dev/null || true
+	-docker image rm -f $$(docker image ls -aq) 2>/dev/null || true
+	-docker system prune -af --volumes 2>/dev/null || true
 
 # Clean build artifacts and swagger docs.
 clean:
