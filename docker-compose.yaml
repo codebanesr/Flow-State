@@ -5,7 +5,7 @@ services:
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
     networks:
-      - fabio_network
+      fabio_network:
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -18,7 +18,7 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
-      - fabio_network
+      fabio_network:
     restart: unless-stopped
 
   fabio:
@@ -31,7 +31,7 @@ services:
     depends_on:
       - consul
     networks:
-      - fabio_network
+      fabio_network:
 
   orchestrator:
     build: .
@@ -52,7 +52,7 @@ services:
       - consul
       - fabio
     networks:
-      - fabio_network
+      fabio_network:
 
   swag:
     image: linuxserver/swag
@@ -74,7 +74,7 @@ services:
     volumes:
       - ./swag:/config
     networks:
-      - fabio_network
+      fabio_network:
     # Add these lines
     cap_add:
       - NET_ADMIN
