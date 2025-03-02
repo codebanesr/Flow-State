@@ -1,4 +1,4 @@
-.PHONY: all swagger build run clean up prod down help td
+.PHONY: all swagger build run clean up prod down help td ensure_network
 
 # Determine which docker compose command to use
 DOCKER_COMPOSE := $(shell which docker-compose 2>/dev/null || echo "docker compose")
@@ -18,12 +18,16 @@ build: swagger
 run: swagger
 	$(GOPATH) run main.go
 
+# Ensure fabio_network exists
+ensure_network:
+	docker network inspect fabio_network >/dev/null 2>&1 || docker network create fabio_network
+
 # Bring up the Docker stack in development mode (no SWAG).
-up:
+up: ensure_network
 	$(DOCKER_COMPOSE) up -d --build
 
 # Bring up the Docker stack in production mode (includes SWAG for SSL).
-prod:
+prod: ensure_network
 	$(DOCKER_COMPOSE) --profile production up -d
 
 # Tear down the Docker stack.

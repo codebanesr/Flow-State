@@ -80,7 +80,7 @@ services:
 networks:
   fabio_network:
     name: fabio_network
-    driver: bridge
+    external: true
 
 volumes:
   letsencrypt_data:
