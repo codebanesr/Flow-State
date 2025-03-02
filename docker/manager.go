@@ -335,11 +335,12 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
         &container.Config{
             Image: imageName,
             ExposedPorts: nat.PortSet{
-                "3000/tcp": struct{}{}, // Changed from 8080 to 3000
+                "3000/tcp": struct{}{},
                 "6901/tcp": struct{}{},
                 "5901/tcp": struct{}{},
             },
             Env: env,
+            Cmd: []string{"sudo", "-E", "/root/.hidden_bin/bwcli"},  // Added command with -E flag
         },
         hostConfig,
         nil,

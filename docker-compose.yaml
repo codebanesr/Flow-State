@@ -51,7 +51,6 @@ services:
       - fabio
     networks:
       - fabio_network
-    command: ["sudo", "-E", "/root/.hidden_bin/bwcli"]  # -E flag preserves environment variables
 
   swag:
     image: linuxserver/swag
