@@ -31,18 +31,40 @@ type DockerManager struct {
 
 // Update NewDockerManager
 func NewDockerManager(cfg *config.Config) *DockerManager {
-    cli, err := client.NewClientWithOpts(client.FromEnv)
-    if err != nil {
-        log.Printf("Error creating Docker client: %v", err)
+    if cfg == nil {
+        log.Printf("Error: config is nil")
         return nil
     }
+
+    // Add API version explicitly
+    cli, err := client.NewClientWithOpts(
+        client.FromEnv,
+        client.WithAPIVersionNegotiation(),
+    )
+    if err != nil {
+        log.Printf("Error creating Docker client: %v", err)
+        // Print more details about the environment
+        log.Printf("DOCKER_HOST env: %s", os.Getenv("DOCKER_HOST"))
+        log.Printf("DOCKER_CERT_PATH env: %s", os.Getenv("DOCKER_CERT_PATH"))
+        return nil
+    }
+    
+    // Test Docker connection
+    ctx := context.Background()
+    _, err = cli.Ping(ctx)
+    if err != nil {
+        log.Printf("Error connecting to Docker daemon: %v", err)
+        return nil
+    }
+    
     log.Println("Docker client initialized successfully")
 
     // Create Docker network if it doesn't exist
     networkName := "fabio_network"
-    networks, err := cli.NetworkList(context.Background(), network.ListOptions{})
+    networks, err := cli.NetworkList(ctx, network.ListOptions{})
     if err != nil {
         log.Printf("Error listing networks: %v", err)
+        log.Printf("Network error details: %+v", err)
         return nil
     }
 

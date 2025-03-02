@@ -37,6 +37,8 @@ services:
     build: .
     container_name: orchestrator
     user: root
+    group_add:  # Add this section
+      - "0"
     expose:
       - "8090"
     environment:
