@@ -81,7 +81,6 @@ services:
 
 networks:
   fabio_network:
-    name: fabio_network
     external: true
 
 volumes:
