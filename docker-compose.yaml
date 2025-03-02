@@ -5,7 +5,7 @@ services:
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
     networks:
-      fabio_network:
+      - flow_state
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -17,8 +17,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      fabio_network:
+
     restart: unless-stopped
 
   fabio:
@@ -30,8 +29,7 @@ services:
       - FABIO_REGISTRY_CONSUL_ADDR=consul:8500
     depends_on:
       - consul
-    networks:
-      fabio_network:
+
 
   orchestrator:
     build: .
@@ -51,8 +49,6 @@ services:
     depends_on:
       - consul
       - fabio
-    networks:
-      fabio_network:
 
   swag:
     image: linuxserver/swag
@@ -73,16 +69,16 @@ services:
       - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
       - ./swag:/config
-    networks:
-      fabio_network:
+
     # Add these lines
     cap_add:
       - NET_ADMIN
 
-networks:
-  fabio_network:
-    external: true
-
 volumes:
   letsencrypt_data:
   rabbitmq-data:
+
+# Add networks section at the end
+networks:
+  flow_state:
+    driver: bridge

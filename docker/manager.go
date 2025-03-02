@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"fmt"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/shanurrahman/orchestrator/config"
@@ -43,12 +43,11 @@ func NewDockerManager(cfg *config.Config) *DockerManager {
     )
     if err != nil {
         log.Printf("Error creating Docker client: %v", err)
-        // Print more details about the environment
         log.Printf("DOCKER_HOST env: %s", os.Getenv("DOCKER_HOST"))
         log.Printf("DOCKER_CERT_PATH env: %s", os.Getenv("DOCKER_CERT_PATH"))
         return nil
     }
-    
+
     // Test Docker connection
     ctx := context.Background()
     _, err = cli.Ping(ctx)
@@ -56,35 +55,23 @@ func NewDockerManager(cfg *config.Config) *DockerManager {
         log.Printf("Error connecting to Docker daemon: %v", err)
         return nil
     }
-    
+
     log.Println("Docker client initialized successfully")
 
-    // Create Docker network if it doesn't exist
-    networkName := "fabio_network"
-    networks, err := cli.NetworkList(ctx, network.ListOptions{})
-    if err != nil {
-        log.Printf("Error listing networks: %v", err)
-        log.Printf("Network error details: %+v", err)
-        return nil
-    }
-
-    networkExists := false
-    for _, network := range networks {
-        if network.Name == networkName {
-            networkExists = true
-            break
+    // Get current container's network
+    networkName := "bridge" // default fallback
+    hostname, err := os.Hostname()
+    if err == nil {
+        container, err := cli.ContainerInspect(ctx, hostname)
+        if err == nil {
+            // Look for flow_state network
+            for network := range container.NetworkSettings.Networks {
+                if strings.Contains(network, "flow_state") {
+                    networkName = network
+                    break
+                }
+            }
         }
-    }
-
-    if !networkExists {
-        _, err := cli.NetworkCreate(context.Background(), networkName, network.CreateOptions{
-            Driver: "bridge",
-        })
-        if err != nil {
-            log.Printf("Error creating network: %v", err)
-            return nil
-        }
-        log.Printf("Created Docker network: %s", networkName)
     }
 
     dm := &DockerManager{
