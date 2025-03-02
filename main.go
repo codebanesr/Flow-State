@@ -28,7 +28,7 @@ import (
 
 // @host      localhost:8090
 // @BasePath  /
-// @schemes   http
+// @schemes   http https
 func main() {
     log.Println("Starting the orchestrator service...")
     
@@ -63,16 +63,17 @@ func main() {
 	r.Get("/health", healthHandler)
 	r.Head("/health", healthHandler)
 	
-	// Serve Swagger documentation
-	swaggerURL := "/swagger/doc.json"
-	if cfg.BehindProxy {  // Add this configuration in your config package
-		swaggerURL = "swagger/doc.json"
-	}
-    // Update the Swagger handler configuration
+    // Serve Swagger documentation
+    swaggerURL := "/swagger/doc.json"
+    if cfg.BehindProxy {
+        swaggerURL = "swagger/doc.json"
+    }
     r.Handle("/swagger/*", httpSwagger.Handler(
         httpSwagger.URL(swaggerURL),
         httpSwagger.DeepLinking(true),
         httpSwagger.DocExpansion("none"),
+        // httpSwagger.DefaultModelsExpandDepth(-1),
+        httpSwagger.PersistAuthorization(true),
     ))
 
 	// Register API routes
