@@ -405,7 +405,14 @@ type ImageInfo struct {
 var availableImages = []ImageInfo{
     // Generic Ubuntu images
     {
-        ID:          "debian-chromium",
+        ID:          "debian-chromium:edge",
+        Name:        "shanurcsenitap/chrome-desktop-playwright:edge",
+        Description: "Base Debian with VNC and Xfce",
+        Category:    "Generic Debian",
+        Tags:        []string{"debian", "base", "xfce", "xvfb", "edge"},
+    },
+    {
+        ID:          "debian-chromium:amd64",
         Name:        "shanurcsenitap/chrome-desktop-playwright:latest",
         Description: "Base Debian with VNC and Xfce",
         Category:    "Generic Debian",
