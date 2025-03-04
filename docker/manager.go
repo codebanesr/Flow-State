@@ -177,7 +177,8 @@ func (dm *DockerManager) registerWithConsul(containerID string, containerIP stri
             fmt.Sprintf("urlprefix-/%s/chat/ strip=/%s/chat/", shortID, shortID),
         },
     }
-    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:3000/health", containerIP)  // Also update the health check URL
+    // Update the health check URL to use /api/health instead of /health
+    chatRegistration.Check.HTTP = fmt.Sprintf("http://%s:3000/api/health", containerIP)
     chatRegistration.Check.Interval = "10s"
 
     // Register noVNC endpoint
