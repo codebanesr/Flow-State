@@ -68,13 +68,14 @@ services:
       - TZ=Europe/London
       - URL=operator.tryiris.dev
       - VALIDATION=http
-      - SUBDOMAINS=www,admin.operator,rabbitmq.operator  # Updated subdomains
+      - SUBDOMAINS=www,admin,rabbitmq
       - DISABLE_IPV6=true
       - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
       - ./swag:/config
     networks:
       fabio_network:
+    # Add these lines
     cap_add:
       - NET_ADMIN
 
