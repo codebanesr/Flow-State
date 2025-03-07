@@ -315,11 +315,8 @@ func (dm *DockerManager) CreateContainer(imageName string, vncConfig config.VNCC
     if vncConfig.ColDepth != 0 {
         env = append(env, fmt.Sprintf("VNC_COL_DEPTH=%d", vncConfig.ColDepth))
     }
-    // Set DISPLAY environment variable with default value of :1.0 if not provided
     if vncConfig.Display != "" {
         env = append(env, fmt.Sprintf("DISPLAY=%s", vncConfig.Display))
-    } else {
-        env = append(env, "DISPLAY=:1.0")
     }
     if vncConfig.ViewOnly {
         env = append(env, fmt.Sprintf("VNC_VIEW_ONLY=%v", vncConfig.ViewOnly))
