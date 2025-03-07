@@ -54,30 +54,41 @@ services:
     networks:
       fabio_network:
 
-  swag:
-    image: linuxserver/swag
-    container_name: swag
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
     restart: unless-stopped
     profiles: ["production"]
     ports:
       - "80:80"
       - "443:443"
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=Europe/London
-      - URL=operator.tryiris.dev
-      - VALIDATION=http
-      - SUBDOMAINS=www,admin,rabbitmq
-      - DISABLE_IPV6=true
-      - EMAIL=shanur.cse.nitap@gmail.com    # Add this line for Let's Encrypt notifications
     volumes:
-      - ./swag:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/config:/etc/traefik
+      - ./traefik/letsencrypt:/letsencrypt
     networks:
       fabio_network:
-    # Add these lines
-    cap_add:
-      - NET_ADMIN
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/etc/traefik"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.email=shanur.cse.nitap@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`admin.operator.tryiris.dev`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
 networks:
   fabio_network:

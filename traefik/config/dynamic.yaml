@@ -1,0 +1,83 @@
+http:
+  routers:
+    # Main operator service
+    operator:
+      rule: "Host(`operator.tryiris.dev`) || Host(`www.operator.tryiris.dev`)"
+      service: fabio
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: myresolver
+      middlewares:
+        - cors
+
+    # Admin UI
+    admin:
+      rule: "Host(`admin.operator.tryiris.dev`) || Host(`www.admin.operator.tryiris.dev`)"
+      service: fabio-ui
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: myresolver
+      middlewares:
+        - cors
+
+    # RabbitMQ management UI
+    rabbitmq:
+      rule: "Host(`rabbitmq.operator.tryiris.dev`)"
+      service: rabbitmq-ui
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: myresolver
+
+    # HTTP to HTTPS redirect
+    http-to-https:
+      rule: "HostRegexp(`{host:.+}`)"
+      entryPoints:
+        - web
+      middlewares:
+        - https-redirect
+      service: noop
+      priority: 1
+
+  services:
+    fabio:
+      loadBalancer:
+        servers:
+          - url: "http://fabio:9999"
+
+    fabio-ui:
+      loadBalancer:
+        servers:
+          - url: "http://fabio:9998"
+
+    rabbitmq-ui:
+      loadBalancer:
+        servers:
+          - url: "http://rabbitmq:15672"
+
+    noop:
+      loadBalancer:
+        servers:
+          - url: "http://localhost:8080"
+
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    cors:
+      headers:
+        accessControlAllowOriginList:
+          - "https://agent.tryiris.dev"
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        accessControlAllowHeaders:
+          - "Authorization"
+          - "Content-Type"
+          - "X-Requested-With"
+        accessControlAllowCredentials: true
